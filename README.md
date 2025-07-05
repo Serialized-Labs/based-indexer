@@ -1,6 +1,63 @@
-# Uniswap v4 Indexer
+# Multi-DEX Indexer with Envio
 
-A public Uniswap v4 indexer built with [Envio](https://envio.dev) that can be used by any developer to power their infrastructure.
+This indexer supports multiple DEXs on Base chain using Envio.
+
+## Supported DEXs
+
+- **Uniswap V4**
+- **Uniswap V3**
+- **Uniswap V2**
+- **Aerodrome V2** (Stable & Volatile)
+- **Aerodrome V3**
+- **PancakeSwap V2**
+- **PancakeSwap V3**
+- **Virtual**
+- **CreatorBid**
+- **Moonshot**
+- **Ape Store**
+
+## Architecture
+
+The indexer is structured with:
+
+- **Mappers**: One for each DEX type in `src/mappers/`
+- **Shared utilities**: Token handling and pool creation helpers
+- **Configuration**: Token configurations per network
+
+## Key Features
+
+- Unified pool creation handling across all DEXs
+- Automatic token metadata fetching
+- Optimized with Promise.all for parallel operations
+- Factorized token handling logic
+
+## Running the Indexer
+
+```bash
+# Install dependencies
+pnpm install
+
+# Generate types
+pnpm codegen
+
+# Build
+pnpm build
+
+# Run the indexer
+pnpm dev
+```
+
+## Pool Types
+
+Each DEX has its specific pool type:
+- `UNISWAP V4`, `UNISWAP V3`, `UNISWAP V2`
+- `AERODROME V2 STABLE`, `AERODROME V2 VOLATILE`, `AERODROME V3`
+- `PANCAKESWAP V2`, `PANCAKESWAP V3`
+- `VIRTUAL`, `CREATOR.BID`, `MOONSHOT`, `APE.STORE`
+
+## About
+
+A multi-DEX indexer built with [Envio](https://envio.dev) that can be used by any developer to power their infrastructure. Originally based on the Uniswap V4 indexer, it has been extended to support multiple DEXs on Base chain.
 
 _Please refer to the [documentation website](https://docs.envio.dev) for a thorough guide on all [Envio](https://envio.dev) indexer features_
 

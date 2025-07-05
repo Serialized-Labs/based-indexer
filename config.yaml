@@ -8,143 +8,85 @@ field_selection: # Additional fields available to index to augment data
     - "from"
 contracts:
   - name: PoolManager
-    handler: src/EventHandlers.ts
+    handler: src/index.ts
     events:
-      - event: Approval(address indexed owner, address indexed spender, uint256 indexed id, uint256 amount)
-      - event: Donate(bytes32 indexed id, address indexed sender, uint256 amount0, uint256 amount1)
       - event: Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)
-      - event: ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)
-      - event: OperatorSet(address indexed owner, address indexed operator, bool approved)
-      - event: OwnershipTransferred(address indexed user, address indexed newOwner)
-      - event: ProtocolFeeControllerUpdated(address indexed protocolFeeController)
-      - event: ProtocolFeeUpdated(bytes32 indexed id, uint24 protocolFee)
-      - event: Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)
-      - event: Transfer(address caller, address indexed from, address indexed to, uint256 indexed id, uint256 amount)
-  - name: PositionManager
-    handler: src/EventHandlers.ts
-    events:
-      - event: Approval(address indexed owner, address indexed spender, uint256 indexed id)
-      - event: ApprovalForAll(address indexed owner, address indexed operator, bool approved)
-      - event: Subscription(uint256 indexed tokenId, address indexed subscriber)
-      - event: Transfer(address indexed from, address indexed to, uint256 indexed id)
-      - event: Unsubscription(uint256 indexed tokenId, address indexed subscriber)
+#  - name: FactoryV3
+#    handler: src/index.ts
+#    events:
+#      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
+#  - name: FactoryUniswapV2
+#    handler: src/index.ts
+#    events:
+#      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
+#  - name: VirtualProxy
+#    handler: src/index.ts
+#    events:
+#      - event: Launched(address indexed token, address indexed virtualLP, uint256 virtualSupply)
+#  - name: FactoryAerodromeV2
+#    handler: src/index.ts
+#    events:
+#      - event: PoolCreated(address indexed token0, address indexed token1, bool indexed stable, address pool, uint256)
+#  - name: FactoryAerodromeV3
+#    handler: src/index.ts
+#    events:
+#      - event: PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)
+#  - name: FactoryCreatorBid
+#    handler: src/index.ts
+#    events:
+#      - event: TokenAdded(address indexed token, uint256 timestamp)
+#  - name: MoonshotFactory
+#    handler: src/index.ts
+#    events:
+#      - event: NewMoonshotToken(address moon, address sender, bytes memeInfo)
+#      - event: NewMoonshotTokenAndBuy(address moon, address sender, bytes memeInfo, uint256 coinFlipResult, uint256 boughtOnCreate, uint256 payment, uint256 moonAmount, uint256 devMoonAmount)
+#  - name: FactoryApe
+#    handler: src/index.ts
+#    events:
+#      - event: CreateToken(address indexed tokenAddress, uint256 indexed tokenId)
+#  - name: FactoryPancakeSwapV2
+#    handler: src/index.ts
+#    events:
+#      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
+#  - name: FactoryPancakeSwapV3
+#    handler: src/index.ts
+#    events:
+#      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
+
 networks:
-  - id: 1
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e
-      - name: PoolManager
-        address:
-          - "0x000000000004444c5dc75cB358380D2e3dE08A90"
-  - id: 10
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x3C3Ea4B57a46241e54610e5f022e5c45859A1017
-      - name: PoolManager
-        address:
-          - 0x9a13F98Cb987694C9F086b1F5eB990EeA8264Ec3
   - id: 8453
-    start_block: 0
+    start_block: 25350988
     contracts:
-      - name: PositionManager
-        address:
-          - 0x7c5f5a4bbd8fd63184577525326123b519429bdc
       - name: PoolManager
         address:
           - 0x498581ff718922c3f8e6a244956af099b2652b2b
-  - id: 42161
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0xd88f38f930b7952f2db2432cb002e7abbf3dd869
-      - name: PoolManager
-        address:
-          - 0x360e68faccca8ca495c1b759fd9eee466db9fb32
-  - id: 137
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x1ec2ebf4f37e7363fdfe3551602425af0b3ceef9
-      - name: PoolManager
-        address:
-          - 0x67366782805870060151383f4bbff9dab53e5cd6
-  - id: 81457
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x4ad2f4cca2682cbb5b950d660dd458a1d3f1baad
-      - name: PoolManager
-        address:
-          - 0x1631559198a9e474033433b2958dabc135ab6446
-  - id: 7777777
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0xf66c7b99e2040f0d9b326b3b7c152e9663543d63
-      - name: PoolManager
-        address:
-          - 0x0575338e4c17006ae181b47900a84404247ca30f
-  # - id: 57073
-  #   start_block: 0
-  #   contracts:
-  #     - name: PositionManager
-  #       address:
-  #         - 0x1b35d13a2e2528f192637f14b05f0dc0e7deb566
-  #     - name: PoolManager
-  #       address:
-  #         - 0x360e68faccca8ca495c1b759fd9eee466db9fb32
-  - id: 1868
-    hypersync_config:
-      url: https://1868.hypersync.xyz
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x1b35d13a2e2528f192637f14b05f0dc0e7deb566
-      - name: PoolManager
-        address:
-          - 0x360e68faccca8ca495c1b759fd9eee466db9fb32
-  - id: 43114
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0xb74b1f14d2754acfcbbe1a221023a5cf50ab8acd
-      - name: PoolManager
-        address:
-          - 0x06380c0e0912312b5150364b9dc4542ba0dbbc85
-  - id: 56
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x7a4a5c919ae2541aed11041a1aeee68f1287f95b
-      - name: PoolManager
-        address:
-          - 0x28e2ea090877bf75740558f6bfb36a5ffee9e9df
-  - id: 130
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0x4529a01c7a0410167c5740c487a8de60232617bf
-      - name: PoolManager
-        address:
-          - 0x1F98400000000000000000000000000000000004
-  - id: 480
-    start_block: 0
-    contracts:
-      - name: PositionManager
-        address:
-          - 0xc585e0f504613b5fbf874f21af14c65260fb41fa
-      - name: PoolManager
-        address:
-          - 0xb1860d529182ac3bc1f51fa2abd56662b7d13f33
+#      - name: FactoryV3
+#        address:
+#          - 0x33128a8fC17869897dcE68Ed026d694621f6FDfD
+#      - name: FactoryUniswapV2
+#        address:
+#          - 0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6
+#      - name: VirtualProxy
+#        address:
+#          - 0xF66DeA7b3e897cD44A5a231c61B6B4423d613259
+#      - name: FactoryAerodromeV2
+#        address:
+#          - 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
+#      - name: FactoryAerodromeV3
+#        address:
+#          - 0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A
+#      - name: FactoryCreatorBid
+#        address:
+#          - 0x6623206875C37bcEcF67c362d4dd1c96bD5C34d8
+#      - name: MoonshotFactory
+#        address:
+#          - 0x7BF7C5F912EA6421C28C186e91DDb8C53F0715E0
+#      - name: FactoryApe
+#        address:
+#          - 0xc750af290bb41ca5dEC04F22CD1318e940Dd826a
+#      - name: FactoryPancakeSwapV2
+#        address:
+#          - 0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E
+#      - name: FactoryPancakeSwapV3
+#        address:
+#          - 0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865
