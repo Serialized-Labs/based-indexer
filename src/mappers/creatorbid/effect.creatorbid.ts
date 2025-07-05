@@ -1,17 +1,18 @@
 import {experimental_createEffect, S} from "envio";
-import {client} from "../../utils/rpc/client.rpc";
+import {getClient} from "../../utils/rpc/client.rpc";
 
 export const getCreatorBidBondingCurveEffect = experimental_createEffect(
     {
         name: "getCreatorBidBondingCurve",
         input: {
             tokenAddress: S.string,
+            chainId: S.number,
         },
         output: S.optional(S.string),
     },
     async ({ input, context }) => {
         try {
-            const result = await client.readContract({
+            const result = await getClient(input.chainId).readContract({
                 address: input.tokenAddress as `0x${string}`,
                 abi: [
                     {
