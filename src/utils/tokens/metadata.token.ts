@@ -1,5 +1,5 @@
 import {getContract} from "viem";
-import {getClient} from "../rpc/client.rpc";
+import {client} from "../rpc/client.rpc";
 
 
 const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -61,7 +61,7 @@ export async function getTokenMetadata(address: string, chainId: number, blockNu
     }
 
     try {
-        return await fetchTokenMetadataMulticall(address, blockNumber, chainId);
+        return await fetchTokenMetadataMulticall(address, blockNumber);
     } catch (e) {
         console.error(`Error fetching metadata for ${address} on chain ${chainId}:`, e);
         return {
@@ -74,11 +74,11 @@ export async function getTokenMetadata(address: string, chainId: number, blockNu
     }
 }
 
-async function fetchTokenMetadataMulticall(address: string, blockNumber: bigint, chainId: number): Promise<TokenMetadata> {
+async function fetchTokenMetadataMulticall(address: string, blockNumber: bigint): Promise<TokenMetadata> {
     const contract = getContract({
         address: address as `0x${string}`,
         abi: ERC20_ABI,
-        client: getClient(chainId)
+        client,
     });
 
     const [name, symbol, decimals, totalSupply] = await Promise.all([
