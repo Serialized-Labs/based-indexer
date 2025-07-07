@@ -7,17 +7,17 @@ export const getTokenMetadataEffect = experimental_createEffect(
         input: {
             address: S.string,
             chainId: S.number,
-            blockNumber: S.bigint,
         },
         output: {
             name: S.string,
             symbol: S.string,
             decimals: S.number,
+            totalSupply: S.string
         },
     },
     async ({ input, context }) => {
         try {
-            return await fetchTokenMetadata(input.address, input.chainId, input.blockNumber);
+            return await fetchTokenMetadata(input.address, input.chainId, );
         } catch (error) {
             context.log.error(`Error fetching metadata for ${input.address}: ${error}`);
             return {
@@ -27,4 +27,4 @@ export const getTokenMetadataEffect = experimental_createEffect(
             } as TokenMetadata
         }
     }
-); 
+);

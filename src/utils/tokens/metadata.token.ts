@@ -1,7 +1,6 @@
 import {getContract} from "viem";
 import {client} from "../rpc/client.rpc";
 
-
 const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 const ERC20_ABI = [
@@ -39,42 +38,42 @@ export interface TokenMetadata {
     name: string;
     symbol: string;
     decimals: number;
-    totalSupply: bigint;
-    blockNumber: bigint;
+    totalSupply: string;
 }
-
 
 function sanitizeString(str: string): string {
     if (!str) return "";
     return str.replace(/[\u0000-\u001F\u007F-\u009F]/g, "").trim();
 }
 
-export async function getTokenMetadata(address: string, chainId: number, blockNumber: bigint): Promise<TokenMetadata> {
+export async function getTokenMetadata(address: string, chainId: number): Promise<TokenMetadata> {
     if (address.toLowerCase() === ADDRESS_ZERO.toLowerCase()) {
         return {
             name: "Native Token",
             symbol: "ETH",
             decimals: 18,
-            totalSupply: 0n,
-            blockNumber: 0n
+            totalSupply: "0",
         };
     }
 
     try {
-        return await fetchTokenMetadataMulticall(address, blockNumber);
+        const normalizedAddress = address.toLowerCase();
+
+        const res = await fetchTokenMetadataMulticall(normalizedAddress);
+
+        return res;
     } catch (e) {
         console.error(`Error fetching metadata for ${address} on chain ${chainId}:`, e);
         return {
             name: "Unknown",
             symbol: "UNKNOWN",
             decimals: 18,
-            totalSupply: 0n,
-            blockNumber: blockNumber
+            totalSupply: "0",
         };
     }
 }
 
-async function fetchTokenMetadataMulticall(address: string, blockNumber: bigint): Promise<TokenMetadata> {
+async function fetchTokenMetadataMulticall(address: string): Promise<TokenMetadata> {
     const contract = getContract({
         address: address as `0x${string}`,
         abi: ERC20_ABI,
@@ -92,7 +91,6 @@ async function fetchTokenMetadataMulticall(address: string, blockNumber: bigint)
         name: sanitizeString(name),
         symbol: sanitizeString(symbol),
         decimals: typeof decimals === "number" ? decimals : 18,
-        totalSupply,
-        blockNumber: blockNumber ?? 0n
+        totalSupply: totalSupply.toString(),
     };
 }

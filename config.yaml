@@ -4,89 +4,101 @@ unordered_multichain_mode: true # When true, strict cross chain ordering of even
 rollback_on_reorg: false
 field_selection: # Additional fields available to index to augment data
   transaction_fields:
-    - "hash"
     - "from"
+    - "hash"
 contracts:
   - name: PoolManager
     handler: src/index.ts
     events:
       - event: Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)
-#  - name: FactoryV3
-#    handler: src/index.ts
-#    events:
-#      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
-#  - name: FactoryUniswapV2
-#    handler: src/index.ts
-#    events:
-#      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
-#  - name: VirtualProxy
-#    handler: src/index.ts
-#    events:
-#      - event: Launched(address indexed token, address indexed virtualLP, uint256 virtualSupply)
-#  - name: FactoryAerodromeV2
-#    handler: src/index.ts
-#    events:
-#      - event: PoolCreated(address indexed token0, address indexed token1, bool indexed stable, address pool, uint256)
-#  - name: FactoryAerodromeV3
-#    handler: src/index.ts
-#    events:
-#      - event: PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)
-#  - name: FactoryCreatorBid
-#    handler: src/index.ts
-#    events:
-#      - event: TokenAdded(address indexed token, uint256 timestamp)
-#  - name: MoonshotFactory
-#    handler: src/index.ts
-#    events:
-#      - event: NewMoonshotToken(address moon, address sender, bytes memeInfo)
-#      - event: NewMoonshotTokenAndBuy(address moon, address sender, bytes memeInfo, uint256 coinFlipResult, uint256 boughtOnCreate, uint256 payment, uint256 moonAmount, uint256 devMoonAmount)
-#  - name: FactoryApe
-#    handler: src/index.ts
-#    events:
-#      - event: CreateToken(address indexed tokenAddress, uint256 indexed tokenId)
-#  - name: FactoryPancakeSwapV2
-#    handler: src/index.ts
-#    events:
-#      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
-#  - name: FactoryPancakeSwapV3
-#    handler: src/index.ts
-#    events:
-#      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
+  - name: FactoryV3
+    handler: src/index.ts
+    events:
+      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
+  - name: FactoryUniswapV2
+    handler: src/index.ts
+    events:
+      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
+  - name: PoolUniswapV2
+    handler: src/index.ts
+    events:
+      - event: Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)
+  - name: PoolUniswapV3
+    handler: src/index.ts
+    events:
+      - event: Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)
+  - name: VirtualProxy
+    handler: src/index.ts
+    events:
+      - event: Launched(address indexed token, address indexed virtualLP, uint256 virtualSupply)
+  - name: FactoryAerodromeV2
+    handler: src/index.ts
+    events:
+      - event: PoolCreated(address indexed token0, address indexed token1, bool indexed stable, address pool, uint256)
+  - name: FactoryAerodromeV3
+    handler: src/index.ts
+    events:
+      - event: PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)
+  - name: FactoryCreatorBid
+    handler: src/index.ts
+    events:
+      - event: TokenAdded(address indexed token, uint256 timestamp)
+  - name: MoonshotFactory
+    handler: src/index.ts
+    events:
+      - event: NewMoonshotToken(address moon, address sender, bytes memeInfo)
+      - event: NewMoonshotTokenAndBuy(address moon, address sender, bytes memeInfo, uint256 coinFlipResult, uint256 boughtOnCreate, uint256 payment, uint256 moonAmount, uint256 devMoonAmount)
+  - name: FactoryApe
+    handler: src/index.ts
+    events:
+      - event: CreateToken(address indexed tokenAddress, uint256 indexed tokenId)
+  - name: FactoryPancakeSwapV2
+    handler: src/index.ts
+    events:
+      - event: PairCreated(address indexed token0, address indexed token1, address pair, uint256)
+  - name: FactoryPancakeSwapV3
+    handler: src/index.ts
+    events:
+      - event: PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)
 
 networks:
   - id: 8453
-    start_block: 25350988
+    start_block: 0
     contracts:
       - name: PoolManager
         address:
           - 0x498581ff718922c3f8e6a244956af099b2652b2b
-#      - name: FactoryV3
-#        address:
-#          - 0x33128a8fC17869897dcE68Ed026d694621f6FDfD
-#      - name: FactoryUniswapV2
-#        address:
-#          - 0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6
-#      - name: VirtualProxy
-#        address:
-#          - 0xF66DeA7b3e897cD44A5a231c61B6B4423d613259
-#      - name: FactoryAerodromeV2
-#        address:
-#          - 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
-#      - name: FactoryAerodromeV3
-#        address:
-#          - 0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A
-#      - name: FactoryCreatorBid
-#        address:
-#          - 0x6623206875C37bcEcF67c362d4dd1c96bD5C34d8
-#      - name: MoonshotFactory
-#        address:
-#          - 0x7BF7C5F912EA6421C28C186e91DDb8C53F0715E0
-#      - name: FactoryApe
-#        address:
-#          - 0xc750af290bb41ca5dEC04F22CD1318e940Dd826a
-#      - name: FactoryPancakeSwapV2
-#        address:
-#          - 0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E
-#      - name: FactoryPancakeSwapV3
-#        address:
-#          - 0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865
+      - name: FactoryV3
+        address:
+          - 0x33128a8fC17869897dcE68Ed026d694621f6FDfD
+      - name: FactoryUniswapV2
+        address:
+          - 0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6
+      - name: PoolUniswapV2
+        abi_file_path: abis/uniswapv2/PoolUniswapV2.json
+      - name: PoolUniswapV3
+        abi_file_path: abis/uniswapv3/PoolUniswapV3.json
+      - name: VirtualProxy
+        address:
+          - 0xF66DeA7b3e897cD44A5a231c61B6B4423d613259
+      - name: FactoryAerodromeV2
+        address:
+          - 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
+      - name: FactoryAerodromeV3
+        address:
+          - 0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A
+      - name: FactoryCreatorBid
+        address:
+          - 0x6623206875C37bcEcF67c362d4dd1c96bD5C34d8
+      - name: MoonshotFactory
+        address:
+          - 0x7BF7C5F912EA6421C28C186e91DDb8C53F0715E0
+      - name: FactoryApe
+        address:
+          - 0xc750af290bb41ca5dEC04F22CD1318e940Dd826a
+      - name: FactoryPancakeSwapV2
+        address:
+          - 0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E
+      - name: FactoryPancakeSwapV3
+        address:
+          - 0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865
