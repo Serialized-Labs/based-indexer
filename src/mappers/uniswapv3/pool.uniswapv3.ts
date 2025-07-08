@@ -4,7 +4,7 @@ import { createSwapEntity } from "../../utils/swap/handler.swap";
 
 FactoryV3.PoolCreated.handlerWithLoader({
     loader: async ({ event, context }) => {
-        await handlePoolCreation({
+        handlePoolCreation({
             poolId: event.params?.pool,
             token0: event.params.token0,
             token1: event.params.token1,
@@ -16,10 +16,11 @@ FactoryV3.PoolCreated.handlerWithLoader({
             additionalId: "",
             chainId: event.chainId,
             hash: event.transaction.hash,
-        }, context);
+        }, context).catch(() => {});
     },
 
     handler: async ({ event, context, loaderReturn }) => {
+        return;
     }
 });
 
@@ -29,25 +30,27 @@ FactoryV3.PoolCreated.contractRegister(({ event, context }) => {
 
 PoolUniswapV3.Swap.handlerWithLoader({
     loader: async ({ event, context }) => {
-        const pool = await context.Pool.get(getPoolId(event.chainId, event.srcAddress));
-        if (!pool) return;
+        (async () => {
+            const pool = await context.Pool.get(getPoolId(event.chainId, event.srcAddress));
+            if (!pool) return;
 
-        const token0 = pool.isToken0Quote ? pool.quote_id : pool.token_id;
-        const token1 = pool.isToken0Quote ? pool.token_id : pool.quote_id;
+            const token0 = pool.isToken0Quote ? pool.quote_id : pool.token_id;
+            const token1 = pool.isToken0Quote ? pool.token_id : pool.quote_id;
 
-        createSwapEntity({
-            poolId: event.srcAddress,
-            chainId: event.chainId,
-            sender: event.params.sender,
-            recipient: event.params.recipient,
-            amount0: event.params.amount0,
-            amount1: event.params.amount1,
-            token0: token0,
-            token1: token1,
-            blockNumber: event.block.number,
-            hash: event.transaction.hash,
-        }, context);
+            createSwapEntity({
+                poolId: event.srcAddress,
+                chainId: event.chainId,
+                sender: event.params.sender,
+                recipient: event.params.recipient,
+                amount0: event.params.amount0,
+                amount1: event.params.amount1,
+                token0: token0,
+                token1: token1,
+                blockNumber: event.block.number,
+                hash: event.transaction.hash,
+            }, context);
+        })().catch(() => {});
     },
     handler: async ({ event, context }) => {
-
+        return;
 }});

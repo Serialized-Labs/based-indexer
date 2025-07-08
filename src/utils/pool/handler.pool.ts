@@ -1,9 +1,11 @@
-import {BigDecimal, HandlerContext, LoaderContext} from "generated";
+import {BigDecimal, LoaderContext} from "generated";
 import {getTokenAndQuote} from "../tokens/quote.token";
 import {EMPTY_ADDRESS} from "../../config/config";
-import {Pool_t} from "../../../generated/src/db/Entities.gen";
+import {Pool_t, Token_t} from "../../../generated/src/db/Entities.gen";
 import {getTokenMetadataEffect} from "../tokens/token.effect";
-import exp from "node:constants";
+
+const poolCache = new Map<string, Pool_t>();
+const tokenCache = new Map<string, Token_t>();
 
 export interface PoolCreationParams {
     poolId: string;
@@ -23,14 +25,16 @@ export interface PoolCreationParams {
 }
 
 export async function handlePoolCreation(params: PoolCreationParams, context: LoaderContext): Promise<void> {
-    const token0Address = params.token0.toLowerCase();
-    const token1Address = params.token1.toLowerCase();
-    const token0Id = getTokenId(params.chainId, token0Address);
-    const token1Id = getTokenId(params.chainId, token1Address);
+    const [token0Address, token1Address, token0Id, token1Id] = await Promise.all([
+        params.token0.toLowerCase(),
+        params.token1.toLowerCase(),
+        getTokenId(params.chainId, params.token0.toLowerCase()),
+        getTokenId(params.chainId, params.token1.toLowerCase())
+    ]);
 
     const [existingToken0, existingToken1] = await Promise.all([
-        context.Token.get(token0Id),
-        context.Token.get(token1Id)
+        getToken(token0Id, context),
+        getToken(token1Id, context)
     ])
 
     let token0 = existingToken0;
@@ -97,10 +101,17 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
         additionalId: params.additionalId?.toString() ?? "",
         creationHash: params.hash,
     };
+    setPoolCache(pool);
 
     context.Pool.set(pool);
-    if (!existingToken0) context.Token.set(token0);
-    if (!existingToken1) context.Token.set(token1);
+    if (!existingToken0) {
+        setTokenCache(token0);
+        context.Token.set(token0);
+    }
+    if (!existingToken1) {
+        setTokenCache(token1);
+        context.Token.set(token1);
+    }
 }
 
 export function getPoolId(chainId: number, poolId: string): string {
@@ -109,4 +120,32 @@ export function getPoolId(chainId: number, poolId: string): string {
 
 export function getTokenId(chainId: number, address: string): string {
     return `${chainId}_${address.toLowerCase()}`;
+}
+
+export async function getPool(id: string, context: LoaderContext): Promise<Pool_t | undefined>  {
+    const cachedPool = poolCache.get(id);
+    if (cachedPool) return cachedPool;
+    const pool = await context.Pool.get(id);
+    (async () => {
+        if (pool) setPoolCache(pool);
+    })().catch(() => {});
+    return pool;
+}
+
+export async function getToken(id: string, context: LoaderContext): Promise<Token_t | undefined> {
+    const cachedToken = tokenCache.get(id);
+    if (cachedToken) return cachedToken;
+    const token = await context.Token.get(id);
+    (async () => {
+        if (token) setTokenCache(token);
+    })().catch(() => {});
+    return token;
+}
+
+export function setPoolCache( pool: Pool_t): void {
+    poolCache.set(pool.id, pool);
+}
+
+export function setTokenCache(token: Token_t): void {
+    tokenCache.set(token.id, token);
 }
