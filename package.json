@@ -15,6 +15,8 @@
     "@types/chai": "^4.3.20",
     "@types/mocha": "10.0.6",
     "@types/node": "20.8.8",
+    "@types/redis": "^4.0.11",
+    "@types/stream-json": "^1.7.8",
     "chai": "4.3.10",
     "mocha": "10.2.0",
     "ts-mocha": "^10.1.0",
@@ -22,7 +24,10 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "envio": "2.25.0"
+    "envio": "2.25.0",
+    "redis": "^5.6.0",
+    "stream-json": "^1.9.1",
+    "worker_map": "^0.0.8"
   },
   "optionalDependencies": {
     "generated": "link:generated"

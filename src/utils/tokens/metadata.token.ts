@@ -1,7 +1,44 @@
-import {getContract} from "viem";
-import {client} from "../rpc/client.rpc";
+import {EffectContext} from "envio";
+import {createClient} from "redis";
 
 const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
+
+const redisClient = createClient({
+    url: 'redis://127.0.0.1:6379'
+});
+
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
+
+const initRedis = async (): Promise<void> => {
+    if (!redisClient.isOpen) await redisClient.connect();
+};
+
+const getTokenMetadataFromRedis = async (address: string, chainId: number, context: EffectContext): Promise<TokenMetadata | null> => {
+    await initRedis();
+    
+    try {
+        const fields = await redisClient.hmGet(address, ['name', 'symbol', 'decimals', 'totalSupply']) as (string | null)[];
+        if (!fields || fields.length < 4) return null;
+        
+        const name = fields[0];
+        const symbol = fields[1];
+        const decimals = fields[2];
+        const totalSupply = fields[3];
+        
+        if (name && symbol && decimals && totalSupply) {
+            return {
+                name: name,
+                symbol: symbol,
+                decimals: parseInt(decimals),
+                totalSupply: totalSupply,
+            };
+        }
+        return null;
+    } catch (e) {
+        context.log.error(`Failed to get token metadata for ${address} on chain ${chainId}: ${e}`);
+        return null;
+    }
+};
 
 const ERC20_ABI = [
     {
@@ -46,7 +83,7 @@ function sanitizeString(str: string): string {
     return str.replace(/[\u0000-\u001F\u007F-\u009F]/g, "").trim();
 }
 
-export async function getTokenMetadata(address: string, chainId: number): Promise<TokenMetadata> {
+export async function getTokenMetadata(address: string, chainId: number, context: EffectContext): Promise<TokenMetadata> {
     if (address.toLowerCase() === ADDRESS_ZERO.toLowerCase()) {
         return {
             name: "Native Token",
@@ -56,41 +93,38 @@ export async function getTokenMetadata(address: string, chainId: number): Promis
         };
     }
 
-    try {
-        const normalizedAddress = address.toLowerCase();
-
-        const res = await fetchTokenMetadataMulticall(normalizedAddress);
-
-        return res;
-    } catch (e) {
-        console.error(`Error fetching metadata for ${address} on chain ${chainId}:`, e);
-        return {
-            name: "Unknown",
-            symbol: "UNKNOWN",
-            decimals: 18,
-            totalSupply: "0",
-        };
-    }
+    const normalizedAddress = address.toLowerCase();
+    return await fetchTokenMetadataMulticall(normalizedAddress, chainId, context);
 }
 
-async function fetchTokenMetadataMulticall(address: string): Promise<TokenMetadata> {
-    const contract = getContract({
-        address: address as `0x${string}`,
-        abi: ERC20_ABI,
-        client,
-    });
-
-    const [name, symbol, decimals, totalSupply] = await Promise.all([
-        contract.read.name().catch(() => "unknown"),
-        contract.read.symbol().catch(() => "UNKNOWN"),
-        contract.read.decimals().catch(() => 18),
-        contract.read.totalSupply().catch(() => 0n),
-    ]);
+async function fetchTokenMetadataMulticall(address: string, chainId: number, context: EffectContext): Promise<TokenMetadata> {
+    const cachedMetadata = await getTokenMetadataFromRedis(address, chainId, context);
+    if (cachedMetadata) return cachedMetadata;
 
     return {
-        name: sanitizeString(name),
-        symbol: sanitizeString(symbol),
-        decimals: typeof decimals === "number" ? decimals : 18,
-        totalSupply: totalSupply.toString(),
-    };
+        name: "Unknown Token",
+        symbol: "UNKNOWN",
+        decimals: 18,
+        totalSupply: "0",
+    }
+
+    // const contract = getContract({
+    //     address: address as `0x${string}`,
+    //     abi: ERC20_ABI,
+    //     client,
+    // });
+    //
+    // const [name, symbol, decimals, totalSupply] = await Promise.all([
+    //     contract.read.name(),
+    //     contract.read.symbol(),
+    //     contract.read.decimals(),
+    //     contract.read.totalSupply(),
+    // ]);
+    //
+    // return {
+    //     name: sanitizeString(name),
+    //     symbol: sanitizeString(symbol),
+    //     decimals: decimals,
+    //     totalSupply: totalSupply.toString(),
+    // };
 }

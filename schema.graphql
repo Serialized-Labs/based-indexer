@@ -9,10 +9,13 @@ type Pool {
     owner: String!
     fee: BigInt!
     tickSpacing: BigInt!
+    sqrtPrice: BigInt!
+    tick: BigInt!
     hooks: String!
     blockNumber: Int!
-    totalValueLockedToken0: BigDecimal!
-    totalValueLockedToken1: BigDecimal!
+    totalValueLockedToken: BigDecimal!
+    totalValueLockedQuote: BigDecimal!
+    tokenPrice: BigDecimal! # Price of the token in Quote
     additionalId: String!
     creationHash: String!
 }
@@ -24,10 +27,12 @@ type Token {
     name: String!
     symbol: String!
     decimals: Int!
-    totalSupply: BigInt!
+    totalSupply: BigDecimal!
     blockNumber: Int!
-    price: BigInt!
-    marketCap: BigInt!
+    price: BigDecimal!
+    marketCap: BigDecimal!
+    bestPool: Pool
+    biggestQuoteTVL: BigDecimal!
 }
 
 type Swap {
@@ -41,5 +46,4 @@ type Swap {
     amountOut: BigInt!
     tokenIn: Token!
     tokenOut: Token!
-    hash: String!
 }

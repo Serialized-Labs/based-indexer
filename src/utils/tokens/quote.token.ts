@@ -8,14 +8,17 @@ export function isToken0Quote(token0: Token_t, token1: Token_t, chainId: number)
   const formattedToken0 = token0.address.toLowerCase();
   const formattedToken1 = token1.address.toLowerCase();
 
-  const isToken0Native = config.natives.some(native => native.toLowerCase() === formattedToken0);
-  const isToken1Native = config.natives.some(native => native.toLowerCase() === formattedToken1);
+  if (formattedToken0 === config.nativeCurrency) return true;
+  if (formattedToken1 === config.nativeCurrency) return false;
+
+  const isToken0Native = config.nativeTokens.some(native => native.toLowerCase() === formattedToken0);
+  const isToken1Native = config.nativeTokens.some(native => native.toLowerCase() === formattedToken1);
 
   if (isToken0Native) return true;
   if (isToken1Native) return false;
 
-  const token0QuoteIndex = config.quotes.findIndex(quote => quote.toLowerCase() === formattedToken0);
-  const token1QuoteIndex = config.quotes.findIndex(quote => quote.toLowerCase() === formattedToken1);
+  const token0QuoteIndex = config.quoteTokens.findIndex(quote => quote.toLowerCase() === formattedToken0);
+  const token1QuoteIndex = config.quoteTokens.findIndex(quote => quote.toLowerCase() === formattedToken1);
 
   if (token0QuoteIndex !== -1 && token1QuoteIndex === -1) return true;
   if (token0QuoteIndex === -1 && token1QuoteIndex !== -1) return false;

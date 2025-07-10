@@ -1,5 +1,6 @@
 import {BigIntAbs} from "../math/bigInt";
 import {LoaderContext} from "../../../generated";
+import {getPoolId} from "../pool/repo.pool";
 
 interface CreateSwapParams {
     poolId: string
@@ -20,19 +21,16 @@ export function createSwapEntity(params: CreateSwapParams, context: LoaderContex
     const amountIn = params.amount0 > 0n ? BigIntAbs(params.amount1) : BigIntAbs(params.amount0);
     const amountOut = params.amount0 > 0n ? BigIntAbs(params.amount0) : BigIntAbs(params.amount1);
 
-    const swapId = `${params.blockNumber}-${params.amount0}-${params.amount1}-${params.sender}`;
-
     context.Swap.set({
-        id: swapId,
+        id: params.hash,
         chain: params.chainId,
-        pool_id: params.poolId,
+        pool_id: getPoolId(params.chainId, params.poolId),
         sender: params.sender,
         recipient: params.recipient,
-        amountIn: BigInt(amountIn),
-        amountOut: BigInt(amountOut),
-        tokenIn_id: tokenIn,
-        tokenOut_id: tokenOut,
+        amountIn: amountOut,
+        amountOut: amountIn,
+        tokenIn_id: tokenOut,
+        tokenOut_id: tokenIn,
         blockNumber: params.blockNumber,
-        hash: params.hash,
     });
 } 

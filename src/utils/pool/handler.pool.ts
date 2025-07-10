@@ -1,11 +1,13 @@
-import {BigDecimal, LoaderContext} from "generated";
+import {LoaderContext} from "generated";
 import {getTokenAndQuote} from "../tokens/quote.token";
 import {EMPTY_ADDRESS} from "../../config/config";
-import {Pool_t, Token_t} from "../../../generated/src/db/Entities.gen";
+import {Pool_t} from "../../../generated/src/db/Entities.gen";
+import {getPoolId, updatePool} from "./repo.pool";
+import {getToken, getTokenId, updateToken} from "../tokens/repo.token";
 import {getTokenMetadataEffect} from "../tokens/token.effect";
-
-const poolCache = new Map<string, Pool_t>();
-const tokenCache = new Map<string, Token_t>();
+import {convertTokenToDecimal} from "../math/bigDecimal";
+import {ZERO_BD} from "../math/constants";
+import {sqrtPriceX96ToTokenPrice} from "../math/sqrtPriceMath";
 
 export interface PoolCreationParams {
     poolId: string;
@@ -51,6 +53,7 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
         }) : undefined
     ]);
 
+
     if (!token0) {
         token0 = {
             id: token0Id,
@@ -59,10 +62,12 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
             name: token0Metadata?.name ?? "Unknown Token",
             symbol: token0Metadata?.symbol ?? "UNKNOWN",
             decimals: token0Metadata?.decimals ?? 18,
-            totalSupply: BigInt(token0Metadata?.totalSupply ?? 0n),
+            totalSupply: convertTokenToDecimal(BigInt(token0Metadata?.totalSupply ?? 0n), token0Metadata?.decimals ?? 18),
             blockNumber: params.block,
-            price: 0n,
-            marketCap: 0n,
+            price: ZERO_BD,
+            marketCap: ZERO_BD,
+            biggestQuoteTVL: ZERO_BD,
+            bestPool_id: undefined,
         };
     }
 
@@ -71,20 +76,37 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
             id: token1Id,
             chain: params.chainId,
             address: token1Address,
-            name: token1Metadata?.name ?? "Unknown",
-            symbol: token1Metadata?.symbol ?? "UNKNOWN",
-            decimals: token1Metadata?.decimals ?? 18,
-            totalSupply: BigInt(token1Metadata?.totalSupply ?? 0n),
+            name: token1Metadata?.name ??  "Unknown",
+            symbol: token1Metadata?.symbol ??  "UNKNOWN",
+            decimals: token1Metadata?.decimals ??  18,
+            totalSupply: convertTokenToDecimal(BigInt(token1Metadata?.totalSupply ?? 0n), token1Metadata?.decimals ?? 18),
             blockNumber: params.block,
-            price: 0n,
-            marketCap: 0n,
+            price: ZERO_BD,
+            marketCap: ZERO_BD,
+            biggestQuoteTVL: ZERO_BD,
+            bestPool_id: undefined,
         };
     }
 
-    const {token, quote, isToken0Quote} = getTokenAndQuote(token0, token1, params.chainId);
+    let {token, quote, isToken0Quote} = getTokenAndQuote(token0, token1, params.chainId);
+    const poolId = getPoolId(params.chainId, params.poolId);
+
+    let tokenPrice = ZERO_BD;
+    if (params.sqrtPrice) {
+        tokenPrice = sqrtPriceX96ToTokenPrice(params.sqrtPrice, token0, token1, isToken0Quote)
+    }
+
+    if (!token.bestPool_id) {
+        token = {
+            ...token,
+            bestPool_id: poolId,
+            price: tokenPrice,
+            biggestQuoteTVL: ZERO_BD
+        }
+    }
 
     const pool: Pool_t = {
-        id: getPoolId(params.chainId, params.poolId),
+        id: poolId,
         chain: params.chainId,
         address: params.poolId,
         token_id: token.id,
@@ -94,58 +116,18 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
         owner: params.owner,
         fee: params.fee ?? 0n,
         tickSpacing: params.tickSpacing ?? -1n,
+        sqrtPrice: params.sqrtPrice ?? -1n,
+        tick: params.tick ?? -1n,
         hooks: params.hooks ?? EMPTY_ADDRESS,
         blockNumber: params.block,
-        totalValueLockedToken0: new BigDecimal(0),
-        totalValueLockedToken1: new BigDecimal(0),
+        totalValueLockedQuote: ZERO_BD,
+        totalValueLockedToken: ZERO_BD,
+        tokenPrice: tokenPrice,
         additionalId: params.additionalId?.toString() ?? "",
         creationHash: params.hash,
     };
-    setPoolCache(pool);
 
-    context.Pool.set(pool);
-    if (!existingToken0) {
-        setTokenCache(token0);
-        context.Token.set(token0);
-    }
-    if (!existingToken1) {
-        setTokenCache(token1);
-        context.Token.set(token1);
-    }
-}
-
-export function getPoolId(chainId: number, poolId: string): string {
-    return `${chainId}_${poolId.toLowerCase()}`;
-}
-
-export function getTokenId(chainId: number, address: string): string {
-    return `${chainId}_${address.toLowerCase()}`;
-}
-
-export async function getPool(id: string, context: LoaderContext): Promise<Pool_t | undefined>  {
-    const cachedPool = poolCache.get(id);
-    if (cachedPool) return cachedPool;
-    const pool = await context.Pool.get(id);
-    (async () => {
-        if (pool) setPoolCache(pool);
-    })().catch(() => {});
-    return pool;
-}
-
-export async function getToken(id: string, context: LoaderContext): Promise<Token_t | undefined> {
-    const cachedToken = tokenCache.get(id);
-    if (cachedToken) return cachedToken;
-    const token = await context.Token.get(id);
-    (async () => {
-        if (token) setTokenCache(token);
-    })().catch(() => {});
-    return token;
-}
-
-export function setPoolCache( pool: Pool_t): void {
-    poolCache.set(pool.id, pool);
-}
-
-export function setTokenCache(token: Token_t): void {
-    tokenCache.set(token.id, token);
+    updateToken(token0, context);
+    updateToken(token1, context);
+    updatePool(pool, context);
 }

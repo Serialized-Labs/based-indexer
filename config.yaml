@@ -11,6 +11,8 @@ contracts:
     handler: src/index.ts
     events:
       - event: Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)
+      - event: Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)
+      - event: ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)
   - name: FactoryV3
     handler: src/index.ts
     events:
@@ -23,10 +25,14 @@ contracts:
     handler: src/index.ts
     events:
       - event: Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)
+      - event: Sync(uint112 reserve0, uint112 reserve1)
   - name: PoolUniswapV3
     handler: src/index.ts
     events:
       - event: Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)
+      - event: Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
+      - event: Collect(address indexed owner, address recipient, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount0, uint128 amount1)
+
   - name: VirtualProxy
     handler: src/index.ts
     events:
@@ -35,6 +41,11 @@ contracts:
     handler: src/index.ts
     events:
       - event: PoolCreated(address indexed token0, address indexed token1, bool indexed stable, address pool, uint256)
+  - name: PoolAerodromeV2
+    handler: src/index.ts
+    events:
+      - event: Swap(address indexed sender, address indexed to, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out)
+      - event: Sync(uint256 reserve0, uint256 reserve1)
   - name: FactoryAerodromeV3
     handler: src/index.ts
     events:
@@ -63,7 +74,7 @@ contracts:
 
 networks:
   - id: 8453
-    start_block: 0
+    start_block: 32618742
     contracts:
       - name: PoolManager
         address:
@@ -84,6 +95,8 @@ networks:
       - name: FactoryAerodromeV2
         address:
           - 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
+      - name: PoolAerodromeV2
+        abi_file_path: abis/aerodromev2/PoolAerodromeV2.json
       - name: FactoryAerodromeV3
         address:
           - 0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A
