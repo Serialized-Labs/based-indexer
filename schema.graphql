@@ -18,6 +18,7 @@ type Pool {
     tokenPrice: BigDecimal! # Price of the token in Quote
     additionalId: String!
     creationHash: String!
+    stable: Boolean!
 }
 
 type Token {

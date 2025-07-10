@@ -1,9 +1,9 @@
 // import "./mappers/uniswapv4/pool.uniswapv4";
 // import "./mappers/uniswapv3/pool.uniswapv3";
 // import "./mappers/uniswapv2/pool.uniswapv2";
-import "./mappers/aerodromev2/pool.aerodromev2";
+// import "./mappers/aerodromev2/pool.aerodromev2";
 // import "./mappers/aerodromev3/pool.aerodromev3";
-// import "./mappers/pancakeswapv2/pool.pancakeswapv2";
+import "./mappers/pancakeswapv2/pool.pancakeswapv2";
 // import "./mappers/pancakeswapv3/pool.pancakeswapv3";
 // import "./mappers/virtual/pool.virtual";
 // import "./mappers/creatorbid/pool.creatorbid";

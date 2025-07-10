@@ -14,11 +14,12 @@ FactoryAerodromeV2.PoolCreated.handlerWithLoader({
             token1: event.params.token1,
             poolType: 'AERODROME V2',
             owner: event.transaction.from ?? event.srcAddress,
-            fee: event.params.stable ? 1n : 0n,
+            fee: event.params.stable ? 500n : 3000n,
             block: event.block.number,
             additionalId: "",
             chainId: event.chainId,
             hash: event.transaction.hash,
+            stable: event.params.stable,
         }, context);
     },
 

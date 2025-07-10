@@ -24,6 +24,7 @@ export interface PoolCreationParams {
     additionalId?: string;
     chainId: number;
     hash: string;
+    stable?: boolean;
 }
 
 export async function handlePoolCreation(params: PoolCreationParams, context: LoaderContext): Promise<void> {
@@ -125,6 +126,7 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
         tokenPrice: tokenPrice,
         additionalId: params.additionalId?.toString() ?? "",
         creationHash: params.hash,
+        stable: params.stable ?? false,
     };
 
     updateToken(token0, context);

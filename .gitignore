@@ -36,3 +36,5 @@ logs
 build
 .DS_Store
 .env
+redis_data/
+*.rdb
