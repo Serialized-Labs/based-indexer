@@ -2,114 +2,18 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "factory_",
+        "internalType": "contract IFeeHandler",
+        "name": "_feeHandler",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "weth_",
         "type": "address"
-      },
-      {
-        "internalType": "contract IFeeHandler",
-        "name": "feeHandler_",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IAgentNameService",
-        "name": "agentNameService_",
-        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "allowance",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "needed",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC20InsufficientAllowance",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "needed",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC20InsufficientBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "approver",
-        "type": "address"
-      }
-    ],
-    "name": "ERC20InvalidApprover",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      }
-    ],
-    "name": "ERC20InvalidReceiver",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      }
-    ],
-    "name": "ERC20InvalidSender",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
-    ],
-    "name": "ERC20InvalidSpender",
-    "type": "error"
   },
   {
     "inputs": [],
@@ -123,12 +27,17 @@
   },
   {
     "inputs": [],
-    "name": "InvalidIndex",
+    "name": "InvalidInitialization",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "InvalidInitialization",
+    "name": "InvalidPayment",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidSignature",
     "type": "error"
   },
   {
@@ -139,11 +48,6 @@
   {
     "inputs": [],
     "name": "NothingStuck",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "PrematureExecution",
     "type": "error"
   },
   {
@@ -178,29 +82,20 @@
     "type": "error"
   },
   {
-    "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "value",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
         "type": "uint256"
       }
     ],
-    "name": "Approval",
-    "type": "event"
+    "name": "UnexpectedOutputAmount",
+    "type": "error"
   },
   {
     "anonymous": false,
@@ -208,72 +103,71 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "account",
+        "name": "buyer",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "cooldownIndex",
-        "type": "uint256"
       },
       {
         "components": [
           {
             "internalType": "uint256",
-            "name": "amount",
+            "name": "eth",
             "type": "uint256"
           },
           {
-            "internalType": "uint64",
-            "name": "claimableAt",
-            "type": "uint64"
+            "internalType": "uint256",
+            "name": "token",
+            "type": "uint256"
           }
         ],
         "indexed": false,
-        "internalType": "struct AgentKey.Cooldown",
-        "name": "cooldown",
+        "internalType": "struct AgentKeyBondingCurve.Reserves",
+        "name": "virtualReserves",
         "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "eth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct AgentKeyBondingCurve.Reserves",
+        "name": "realReserves",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "input",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "output",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
       }
     ],
-    "name": "Cancelled",
+    "name": "Buy",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "cooldownIndex",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint64",
-            "name": "claimableAt",
-            "type": "uint64"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct AgentKey.Cooldown",
-        "name": "cooldown",
-        "type": "tuple"
-      }
-    ],
-    "name": "Claimed",
+    "inputs": [],
+    "name": "EIP712DomainChanged",
     "type": "event"
   },
   {
@@ -299,25 +193,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
-        "name": "tokensSwapped",
+        "name": "ethAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "adminAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "creatorAmount",
+        "name": "tokenAmount",
         "type": "uint256"
       }
     ],
-    "name": "FeesCollected",
+    "name": "InitialPoolBuy",
     "type": "event"
   },
   {
@@ -341,8 +235,112 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "Launched",
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pair",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "ethReserve",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenReserve",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isToken0",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "adminFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "creatorFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "LiquidityAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "eth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct AgentKeyBondingCurve.Reserves",
+        "name": "virtualReserves",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "eth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct AgentKeyBondingCurve.Reserves",
+        "name": "realReserves",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "input",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "output",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "Sell",
     "type": "event"
   },
   {
@@ -351,11 +349,39 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "pair",
+        "name": "account",
         "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiresAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct EIP712Lib.SignatureWithNonce",
+        "name": "signature",
+        "type": "tuple"
       }
     ],
-    "name": "PairUpdated",
+    "name": "SignatureUsed",
     "type": "event"
   },
   {
@@ -384,89 +410,21 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
+    "inputs": [],
+    "name": "adminSuccessFee",
+    "outputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "ak",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "Subscribed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "cooldownIndex",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint64",
-            "name": "claimableAt",
-            "type": "uint64"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct AgentKey.Cooldown",
-        "name": "cooldown",
-        "type": "tuple"
-      }
-    ],
-    "name": "Unsubscribed",
-    "type": "event"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
-    "name": "adminSellFeePercent",
+    "name": "adminTradeFeePercent",
     "outputs": [
       {
         "internalType": "uint8",
@@ -478,37 +436,13 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
-      }
-    ],
-    "name": "allowance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "ansTokenID",
+    "name": "akGnosis",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -517,114 +451,137 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "spender",
-        "type": "address"
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiresAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct EIP712Lib.SignatureWithNonce",
+        "name": "_signature",
+        "type": "tuple"
       },
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "_minOutput",
         "type": "uint256"
       }
     ],
-    "name": "approve",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "bondingCurve",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "burn",
+    "name": "buy",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_output",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateBuyAmountIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "input",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "fee",
         "type": "uint256"
       }
     ],
-    "name": "burnFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_cooldownIndex",
+        "name": "_input",
         "type": "uint256"
       }
     ],
-    "name": "cancel",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "calculateBuyAmountOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "output",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_cooldownIndex",
+        "name": "_output",
         "type": "uint256"
       }
     ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "calculateSellAmountIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "input",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_input",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateSellAmountOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "output",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -642,7 +599,20 @@
   },
   {
     "inputs": [],
-    "name": "creatorSellFeePercent",
+    "name": "creatorSuccessFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creatorTradeFeePercent",
     "outputs": [
       {
         "internalType": "uint8",
@@ -655,67 +625,68 @@
   },
   {
     "inputs": [],
-    "name": "decimals",
+    "name": "eip712Domain",
     "outputs": [
       {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
+        "internalType": "bytes1",
+        "name": "fields",
+        "type": "bytes1"
+      },
       {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "version",
+        "type": "string"
       },
       {
         "internalType": "uint256",
-        "name": "_cooldownIndex",
+        "name": "chainId",
         "type": "uint256"
-      }
-    ],
-    "name": "getCooldown",
-    "outputs": [
+      },
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint64",
-            "name": "claimableAt",
-            "type": "uint64"
-          }
-        ],
-        "internalType": "struct AgentKey.Cooldown",
-        "name": "",
-        "type": "tuple"
+        "internalType": "address",
+        "name": "verifyingContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "salt",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "extensions",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "_user",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "getMembership",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeHandler",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "contract IFeeHandler",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -741,14 +712,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_user",
-        "type": "address"
-      }
-    ],
-    "name": "getTotalCooldowns",
+    "inputs": [],
+    "name": "initialPoolETH",
     "outputs": [
       {
         "internalType": "uint256",
@@ -760,23 +725,15 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "hasLaunched",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_bondingCurve",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_akGnosis",
         "type": "address"
       },
       {
@@ -785,28 +742,33 @@
         "type": "address"
       },
       {
-        "internalType": "string",
-        "name": "name_",
-        "type": "string"
-      },
-      {
         "internalType": "uint256",
-        "name": "_ansTokenID",
+        "name": "_initialVirtualETH",
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "_treasury",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_finalVirtualETH",
+        "type": "uint256"
       },
       {
         "internalType": "uint8",
-        "name": "_adminSellFeePercent",
+        "name": "_adminTradeFeePercent",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_creatorSellFeePercent",
+        "name": "_creatorTradeFeePercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_adminSuccessFeePercent",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_creatorSuccessFeePercent",
         "type": "uint8"
       }
     ],
@@ -817,19 +779,12 @@
   },
   {
     "inputs": [],
-    "name": "launch",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
+    "name": "pair",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "address",
         "name": "",
-        "type": "string"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -837,12 +792,17 @@
   },
   {
     "inputs": [],
-    "name": "pair",
+    "name": "realReserves",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "eth",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "token",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -864,12 +824,17 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_pair",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minOutput",
+        "type": "uint256"
       }
     ],
-    "name": "setPair",
+    "name": "sell",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -877,56 +842,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "subscribe",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "to",
+        "name": "",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "value",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "transfer",
+    "name": "signatureNonces",
     "outputs": [
       {
         "internalType": "bool",
@@ -934,44 +860,15 @@
         "type": "bool"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_value",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "treasury",
+    "name": "token",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IAgentKey",
         "name": "",
         "type": "address"
       }
@@ -980,20 +877,47 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "virtualK",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "unsubscribe",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "stateMutability": "payable",
-    "type": "receive"
+    "inputs": [],
+    "name": "virtualReserves",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "eth",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "token",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "virtualTarget",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ]

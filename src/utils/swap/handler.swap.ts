@@ -5,7 +5,6 @@ import {getPoolId} from "../pool/repo.pool";
 interface CreateSwapParams {
     poolId: string
     sender: string
-    recipient: string
     amount0: bigint
     amount1: bigint
     token0: string
@@ -26,7 +25,6 @@ export function createSwapEntity(params: CreateSwapParams, context: LoaderContex
         chain: params.chainId,
         pool_id: getPoolId(params.chainId, params.poolId),
         sender: params.sender,
-        recipient: params.recipient,
         amountIn: amountOut,
         amountOut: amountIn,
         tokenIn_id: tokenOut,

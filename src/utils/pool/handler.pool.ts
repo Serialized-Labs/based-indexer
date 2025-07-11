@@ -1,7 +1,7 @@
 import {LoaderContext} from "generated";
 import {getTokenAndQuote} from "../tokens/quote.token";
 import {EMPTY_ADDRESS} from "../../config/config";
-import {Pool_t} from "../../../generated/src/db/Entities.gen";
+import {Pool_t, Token_t} from "../../../generated/src/db/Entities.gen";
 import {getPoolId, updatePool} from "./repo.pool";
 import {getToken, getTokenId, updateToken} from "../tokens/repo.token";
 import {getTokenMetadataEffect} from "../tokens/token.effect";
@@ -25,9 +25,14 @@ export interface PoolCreationParams {
     chainId: number;
     hash: string;
     stable?: boolean;
+    supplyIsValueLocked?: boolean;
 }
 
-export async function handlePoolCreation(params: PoolCreationParams, context: LoaderContext): Promise<void> {
+export async function handlePoolCreation(params: PoolCreationParams, context: LoaderContext): Promise<{
+    pool: Pool_t
+    token: Token_t
+    quote: Token_t
+}> {
     const [token0Address, token1Address, token0Id, token1Id] = await Promise.all([
         params.token0.toLowerCase(),
         params.token1.toLowerCase(),
@@ -122,7 +127,7 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
         hooks: params.hooks ?? EMPTY_ADDRESS,
         blockNumber: params.block,
         totalValueLockedQuote: ZERO_BD,
-        totalValueLockedToken: ZERO_BD,
+        totalValueLockedToken: params.supplyIsValueLocked ? token.totalSupply : ZERO_BD,
         tokenPrice: tokenPrice,
         additionalId: params.additionalId?.toString() ?? "",
         creationHash: params.hash,
@@ -132,4 +137,10 @@ export async function handlePoolCreation(params: PoolCreationParams, context: Lo
     updateToken(token0, context);
     updateToken(token1, context);
     updatePool(pool, context);
+
+    return {
+        pool: pool,
+        token: token,
+        quote: quote
+    }
 }

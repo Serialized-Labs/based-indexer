@@ -11,11 +11,12 @@ export interface HandleLiquidityParams {
     token?: Token_t
     quote?: Token_t
     chainId: number
-    srcAddress: string
+    poolAddress: string
+    tokenPrice?: BigDecimal
 }
 
 export async function handleLiquidity(params: HandleLiquidityParams, context: LoaderContext): Promise<void> {
-    const poolId = getPoolId(params.chainId, params.srcAddress);
+    const poolId = getPoolId(params.chainId, params.poolAddress);
     let pool = !params.pool ? await getPool(poolId, context): params.pool
     if (!pool) return;
 
@@ -26,11 +27,16 @@ export async function handleLiquidity(params: HandleLiquidityParams, context: Lo
 
     if (!token || !quote) return;
 
+    let tokenPrice = !params.newTotalReserveToken.eq(0) ? params.newTotalReserveQuote.div(params.newTotalReserveToken) : new BigDecimal(0);
+    if (params.tokenPrice) {
+        tokenPrice = params.tokenPrice;
+    }
+
     pool = {
         ...pool,
         totalValueLockedToken: params.newTotalReserveToken,
         totalValueLockedQuote: params.newTotalReserveQuote,
-        tokenPrice: !params.newTotalReserveToken.eq(0) ? params.newTotalReserveQuote.div(params.newTotalReserveToken) : new BigDecimal(0),
+        tokenPrice: tokenPrice
     }
 
     if (pool.totalValueLockedQuote.isGreaterThan(token.biggestQuoteTVL) || token.bestPool_id === pool.id) {

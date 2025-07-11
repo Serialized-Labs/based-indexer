@@ -15,7 +15,6 @@ FactoryPancakeSwapV2.PairCreated.handlerWithLoader({
             poolType: 'PANCAKESWAP V2',
             owner: event.transaction.from ?? event.srcAddress,
             fee: 2500n,
-            tickSpacing: 0n,
             block: event.block.number,
             additionalId: "",
             chainId: event.chainId,
@@ -39,7 +38,6 @@ PoolPancakeSwapV2.Swap.handlerWithLoader({
         createSwapEntity({
             poolId: event.srcAddress,
             sender: event.params.sender,
-            recipient: event.params.to,
             amount0: event.params.amount0Out > 0n ? -BigInt(event.params.amount0Out) : BigInt(event.params.amount0In),
             amount1: event.params.amount1Out > 0n ? -BigInt(event.params.amount1Out) : BigInt(event.params.amount1In),
             token0: token0,
@@ -77,7 +75,7 @@ PoolPancakeSwapV2.Sync.handlerWithLoader({
             token: token,
             quote: quote,
             chainId: event.chainId,
-            srcAddress: event.srcAddress
+            poolAddress: event.srcAddress
         }, context)
     },
     handler: async ({ event, context, loaderReturn }) => {

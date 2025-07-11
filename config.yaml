@@ -37,6 +37,12 @@ contracts:
     handler: src/index.ts
     events:
       - event: Launched(address indexed token, address indexed virtualLP, uint256 virtualSupply)
+      - event: Graduated(address indexed token, address indexed agentToken)
+  - name: VirtualPool
+    handler: src/index.ts
+    events:
+      - event: Mint(uint256 reserve0, uint256 reserve1)
+      - event: Swap(uint256 amount0In, uint256 amount0Out, uint256 amount1In, uint256 amount1Out)
   - name: FactoryAerodromeV2
     handler: src/index.ts
     events:
@@ -60,15 +66,27 @@ contracts:
     handler: src/index.ts
     events:
       - event: TokenAdded(address indexed token, uint256 timestamp)
+  - name: TokenCreatorBid
+    handler: src/index.ts
+    events:
+      - event: Buy(address indexed buyer, (uint256,uint256) virtualReserves, (uint256,uint256) realReserves, uint256 input, uint256 output, uint256 fee)
+      - event: Sell(address indexed seller, (uint256,uint256) virtualReserves, (uint256,uint256) realReserves, uint256 input, uint256 output, uint256 fee)
   - name: MoonshotFactory
     handler: src/index.ts
     events:
       - event: NewMoonshotToken(address moon, address sender, bytes memeInfo)
-      - event: NewMoonshotTokenAndBuy(address moon, address sender, bytes memeInfo, uint256 coinFlipResult, uint256 boughtOnCreate, uint256 payment, uint256 moonAmount, uint256 devMoonAmount)
+      - event: NewMoonshotTokenAndBuy(address addr, address creator, bytes signature, uint256 tokenAmount, uint256 collateralAmount, uint256 fee, uint256 dexFee, uint256 curveProgressBps)
+      - event: BuyExactIn(address indexed buyer, address indexed token, uint256 tokenAmount, uint256 curvePositionAfterTrade, uint256 collateralAmount, uint256 fee, uint256 dexFee, uint256 curveProgressBps)
+      - event: BuyExactOut(address indexed buyer, address indexed token, uint256 tokenAmount, uint256 curvePositionAfterTrade, uint256 collateralAmount, uint256 refund, uint256 fee, uint256 dexFee, uint256 curveProgressBps)
+      - event: SellExactIn(address indexed seller, address indexed token, uint256 tokenAmount, uint256 curvePositionAfterTrade, uint256 collateralAmount, uint256 fee, uint256 dexFee, uint256 curveProgressBps)
+      - event: SellExactOut(address indexed seller, address indexed token, uint256 tokenAmount, uint256 curvePositionAfterTrade, uint256 collateralAmount, uint256 fee, uint256 dexFee, uint256 curveProgressBps)
+      - event: Migrated(address token, uint256 tokensToMigrate, uint256 tokensToBurn, uint256 collateralToMigrate, uint256 migrationFee, address pair)
   - name: FactoryApe
     handler: src/index.ts
     events:
       - event: CreateToken(address indexed tokenAddress, uint256 indexed tokenId)
+      - event: Swap(address indexed token, address indexed to, uint256 amountInToken, uint256 amountInETH, uint256 amountOutToken, uint256 amountOutETH, uint256 priceBefore, uint256 priceAfter)
+      - event: Launch(address indexed token, uint256 amountToken, uint256 amountETH, uint256 lpTokensMinted)
   - name: FactoryPancakeSwapV2
     handler: src/index.ts
     events:
@@ -91,7 +109,7 @@ contracts:
 
 networks:
   - id: 8453
-    start_block: 32618742
+    start_block: 32196629
     contracts:
       - name: PoolManager
         address:
@@ -109,6 +127,8 @@ networks:
       - name: VirtualProxy
         address:
           - 0xF66DeA7b3e897cD44A5a231c61B6B4423d613259
+      - name: VirtualPool
+        abi_file_path: abis/virtual/VirtualPool.json
       - name: FactoryAerodromeV2
         address:
           - 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
@@ -122,6 +142,8 @@ networks:
       - name: FactoryCreatorBid
         address:
           - 0x6623206875C37bcEcF67c362d4dd1c96bD5C34d8
+      - name: TokenCreatorBid
+        abi_file_path: abis/creatorbid/TokenCreatorBid.json
       - name: MoonshotFactory
         address:
           - 0x7BF7C5F912EA6421C28C186e91DDb8C53F0715E0

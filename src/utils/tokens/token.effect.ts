@@ -17,10 +17,6 @@ export const getTokenMetadataEffect = experimental_createEffect(
     },
     async ({ input, context }) => {
         try {
-            if (input.address.toLowerCase() === "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf") {
-                context.log.info(`Fetching metadata for Cbbtc on chain ${input.chainId}`);
-            }
-
             return await fetchTokenMetadata(input.address, input.chainId, context);
         } catch (error) {
             context.log.error(`Error fetching metadata for ${input.address}: ${error}`);

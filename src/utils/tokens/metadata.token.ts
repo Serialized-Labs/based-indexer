@@ -1,13 +1,11 @@
 import {EffectContext} from "envio";
-import {createClient} from "redis";
+import {getContract} from "viem";
+import {client} from "../rpc/client.rpc";
+import {redisClient} from "../redis/redis";
+import {ADDRESS_ZERO} from "../math/constants";
+import * as dotenv from "dotenv";
 
-const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
-
-const redisClient = createClient({
-    url: 'redis://127.0.0.1:6379'
-});
-
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
+dotenv.config();
 
 const initRedis = async (): Promise<void> => {
     if (!redisClient.isOpen) await redisClient.connect();
@@ -101,30 +99,32 @@ async function fetchTokenMetadataMulticall(address: string, chainId: number, con
     const cachedMetadata = await getTokenMetadataFromRedis(address, chainId, context);
     if (cachedMetadata) return cachedMetadata;
 
-    return {
-        name: "Unknown Token",
-        symbol: "UNKNOWN",
-        decimals: 18,
-        totalSupply: "0",
+    if (process.env.METADATA !== "true") {
+        return {
+            name: "Unknown Token",
+            symbol: "UNKNOWN",
+            decimals: 18,
+            totalSupply: "0",
+        }
     }
 
-    // const contract = getContract({
-    //     address: address as `0x${string}`,
-    //     abi: ERC20_ABI,
-    //     client,
-    // });
-    //
-    // const [name, symbol, decimals, totalSupply] = await Promise.all([
-    //     contract.read.name(),
-    //     contract.read.symbol(),
-    //     contract.read.decimals(),
-    //     contract.read.totalSupply(),
-    // ]);
-    //
-    // return {
-    //     name: sanitizeString(name),
-    //     symbol: sanitizeString(symbol),
-    //     decimals: decimals,
-    //     totalSupply: totalSupply.toString(),
-    // };
+    const contract = getContract({
+        address: address as `0x${string}`,
+        abi: ERC20_ABI,
+        client,
+    });
+
+    const [name, symbol, decimals, totalSupply] = await Promise.all([
+        contract.read.name(),
+        contract.read.symbol(),
+        contract.read.decimals(),
+        contract.read.totalSupply(),
+    ]);
+
+    return {
+        name: sanitizeString(name),
+        symbol: sanitizeString(symbol),
+        decimals: decimals,
+        totalSupply: totalSupply.toString(),
+    };
 }

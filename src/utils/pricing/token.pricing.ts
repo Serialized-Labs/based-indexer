@@ -1,4 +1,3 @@
-import {Token} from "../../../generated";
 import {BigDecimal} from "generated";
 import {NETWORK_CONFIGS} from "../../config/config";
 import {ONE_BD} from "../math/constants";

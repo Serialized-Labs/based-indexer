@@ -37,7 +37,6 @@ PoolAerodromeV3.Swap.handlerWithLoader({
             poolId: event.srcAddress,
             chainId: event.chainId,
             sender: event.params.sender,
-            recipient: event.params.recipient,
             amount0: event.params.amount0,
             amount1: event.params.amount1,
             token0: token0,

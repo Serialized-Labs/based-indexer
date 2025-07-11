@@ -231,5 +231,40 @@
         ],
         "name": "CreateToken",
         "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true,  "internalType": "address", "name": "token",          "type": "address" },
+            { "indexed": true,  "internalType": "address", "name": "to",             "type": "address" },
+            { "indexed": false, "internalType": "uint256", "name": "amountInToken",  "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "amountInETH",    "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "amountOutToken", "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "amountOutETH",   "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "priceBefore",    "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "priceAfter",     "type": "uint256" }
+        ],
+        "name": "Swap",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true,  "internalType": "address", "name": "token",             "type": "address" },
+            { "indexed": false, "internalType": "uint256", "name": "amountToken",       "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "amountETH",         "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "lpTokensMinted",    "type": "uint256" }
+        ],
+        "name": "Launch",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "newOwner",      "type": "address" }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
     }
 ]

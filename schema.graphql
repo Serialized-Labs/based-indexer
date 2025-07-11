@@ -42,7 +42,6 @@ type Swap {
     chain: Int!
     pool: Pool!
     sender: String!
-    recipient: String!
     amountIn: BigInt!
     amountOut: BigInt!
     tokenIn: Token!
